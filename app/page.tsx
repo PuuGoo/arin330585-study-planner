@@ -1,0 +1,35 @@
+"use client";
+import { useEffect, useMemo, useState } from "react";
+const plan = [
+["02/11","Chương 4 – Intelligent Systems","Agent và PEAS",["Hiểu khái niệm AI Agent và Intelligent Agent","Học PEAS: Performance, Environment, Actuators, Sensors","Làm ví dụ phân tích Agent và PEAS"]],
+["03/11","Chương 4 – Intelligent Systems","Môi trường và tính hợp lý",["Ôn các loại môi trường của Agent","Hiểu Rational Agent và tiêu chí đánh giá","Làm câu hỏi trắc nghiệm Chương 4"]],
+["04/11","Chương 4 – Intelligent Systems","Tổng ôn và câu hỏi",["Ôn toàn bộ lý thuyết Chương 4","Luyện 20 câu hỏi Chương 4","Tự trình bày câu tự luận Agent/PEAS"]],
+["05/11","Chương 5 – Search Problems","BFS và DFS",["Hiểu bài toán tìm kiếm và không gian trạng thái","Học BFS và DFS: cách hoạt động, ưu nhược điểm","Luyện truy vết BFS/DFS trên đồ thị"]],
+["06/11","Chương 5 – Search Problems","UCS, IDS và A*",["Học Uniform Cost Search và Iterative Deepening Search","Học A* và hàm heuristic","So sánh tính đầy đủ, tối ưu và độ phức tạp"]],
+["07/11","Chương 6 – Local Search","Tìm kiếm cục bộ",["Học ý tưởng Local Search","Ôn các thuật toán và cách đánh giá trạng thái","Luyện 20 câu hỏi Chương 6"]],
+["08/11","Chương 7 – Searching in Complex Environments","AND-OR Graph",["Hiểu môi trường tìm kiếm phức tạp","Học AND-OR Graph và cách biểu diễn","Luyện câu tự luận AND-OR Graph và bài tập"]],
+["09/11","Chương 8 – CSP","Map Coloring và N-Queens",["Hiểu CSP: biến, miền giá trị và ràng buộc","Làm bài Map Coloring","Làm bài N-Queens và nhận diện nghiệm không hợp lệ"]],
+["10/11","Chương 8 – CSP","Luyện tập và tổng kết",["Ôn lại mô hình hóa bài toán CSP","Luyện 29 câu hỏi Chương 8","Tự giải bài CSP và kiểm tra ràng buộc"]],
+["11/11","Tự luận và tổng ôn","AI Ethics và Golden Rule",["Ôn các câu tự luận trọng tâm đã đánh dấu","Phân biệt Generative AI và Predictive AI","Ôn AI Ethics, Golden Rule và ví dụ ứng dụng"]],
+["12/11","Mock Exam và chuẩn bị thi","Kiểm tra tổng hợp và A4",["Làm đề mô phỏng trong 75 phút","Kiểm tra lại câu sai và phần kiến thức yếu","Chuẩn bị và hệ thống hóa tờ A4 ghi chú"]]
+] as const;
+const KEY="arin330585-study-progress-v1";
+export default function Home(){
+ const [done,setDone]=useState<string[]>([]),[tab,setTab]=useState("overview"),[open,setOpen]=useState(0),[ready,setReady]=useState(false);
+ useEffect(()=>{try{const s=localStorage.getItem(KEY);if(s)setDone(JSON.parse(s));}catch{}setReady(true)},[]);
+ useEffect(()=>{if(ready)localStorage.setItem(KEY,JSON.stringify(done))},[done,ready]);
+ const total=33,pct=Math.round(done.length/total*100),finished=plan.filter((d,i)=>d[3].every((_,j)=>done.includes(i+"-"+j))).length;
+ const toggle=(id:string)=>setDone(p=>p.includes(id)?p.filter(x=>x!==id):[...p,id]);
+ const sections=[["Chương 4",0,3],["Chương 5",3,5],["Chương 6",5,6],["Chương 7",6,7],["Chương 8",7,9],["Tự luận và tổng ôn",9,10],["Mock Exam và A4",10,11]] as const;
+ return <main className="wrap">
+  <header><div className="logo">AI</div><div className="brand"><small>HCMUTE · ARIN330585</small><b>Study Planner</b></div><span className="public">● PUBLIC STUDY PLAN</span></header>
+  <section className="hero"><div><small>TRÍ TUỆ NHÂN TẠO · 2026</small><h1>Học có kế hoạch.<br/><i>Tiến bộ mỗi ngày.</i></h1><p>Theo dõi lịch học, nhiệm vụ và tiến độ ôn tập môn Trí tuệ nhân tạo.</p><div className="meta">◷ 11 ngày học　 ·　 ◈ 5 giờ/ngày　 ·　 ▣ 33 nhiệm vụ</div></div><div className="ring"><b>{pct}%</b><small>HOÀN THÀNH</small></div></section>
+  <section className="metrics"><article><small>NHIỆM VỤ HOÀN THÀNH</small><strong>{done.length}<em> / 33</em></strong></article><article><small>NGÀY HOÀN THÀNH</small><strong>{finished}<em> / 11</em></strong></article><article><small>TIẾN ĐỘ TỔNG</small><strong>{pct}<em>%</em></strong><div className="bar"><span style={{width:pct+"%"}}/></div></article></section>
+  <nav>{[["overview","Tổng quan"],["schedule","Lịch học"],["stats","Thống kê"]].map(([v,l])=><button className={tab===v?"sel":""} onClick={()=>setTab(v)} key={v}>{l}</button>)}</nav>
+  {tab==="overview"&&<div className="layout"><section><div className="heading"><div><small>BẮT ĐẦU TỪ ĐÂY</small><h2>Nhiệm vụ hôm nay</h2></div><span>02 NOV 2026</span></div><div className="card today"><label>NGÀY 01 · CHƯƠNG 4</label><h3>{plan[0][2]}</h3><p>{plan[0][1]}</p>{plan[0][3].map((t,j)=><Task key={j} text={t} checked={done.includes("0-"+j)} onClick={()=>toggle("0-"+j)}/>)}</div><div className="heading next"><div><small>LỘ TRÌNH</small><h2>Các mốc tiếp theo</h2></div><button onClick={()=>setTab("schedule")}>Xem tất cả →</button></div>{plan.slice(1,5).map((d,k)=><div className="dayrow" key={k}><b>{String(k+2).padStart(2,"0")}</b><div><strong>{d[1]}</strong><small>{d[0]} · {d[2]}</small></div><span>{d[3].filter((_,j)=>done.includes((k+1)+"-"+j)).length}/3</span></div>)}</section><aside><div className="card"><small>MỤC TIÊU HỌC TẬP</small><h3>5 giờ mỗi ngày</h3><p>Chia thời gian cho lý thuyết, thực hành bài tập và tự kiểm tra kiến thức.</p><div className="bar"><span style={{width:"60%"}}/></div></div><div className="card"><small>TRỌNG TÂM ÔN THI</small><ul>{["Agent & PEAS","BFS, DFS, UCS, IDS, A*","Local Search","AND-OR Graph","CSP: Map Coloring, N-Queens","AI Ethics & Golden Rule"].map(x=><li key={x}>{x}</li>)}</ul></div><div className="note">⌑　Mỗi người có checklist riêng trên trình duyệt của mình.</div></aside></div>}
+  {tab==="schedule"&&<section className="schedule"><div className="heading"><div><small>02 — 12 NOVEMBER 2026</small><h2>Lịch học chi tiết</h2></div><span>{finished}/11 NGÀY</span></div>{plan.map((d,i)=><div className="card day" key={i}><button className="dayhead" onClick={()=>setOpen(open===i?-1:i)}><div><small>{d[0]}/2026</small><b>{d[1]}</b><span>{d[2]}</span></div><strong>{d[3].filter((_,j)=>done.includes(i+"-"+j)).length}/3　{open===i?"−":"+"}</strong></button>{open===i&&<div className="tasks">{d[3].map((t,j)=><Task key={j} text={t} checked={done.includes(i+"-"+j)} onClick={()=>toggle(i+"-"+j)}/>)}</div>}</div>)}</section>}
+  {tab==="stats"&&<section className="schedule"><div className="heading"><div><small>THE BIG PICTURE</small><h2>Thống kê tiến độ</h2></div></div><div className="card statHero"><strong>{pct}%</strong><p>hoàn thành toàn bộ kế hoạch</p><div className="bar"><span style={{width:pct+"%"}}/></div></div><div className="statgrid">{sections.map(([name,a,b])=>{const all=plan.slice(a,b).flatMap((d,i)=>d[3].map((_,j)=>(a+i)+"-"+j));const n=all.filter(x=>done.includes(x)).length;return <div className="card" key={name}><b>{name}</b><span>{n}/{all.length}</span><div className="bar"><span style={{width:(n/all.length*100)+"%"}}/></div></div>})}</div><button className="reset" onClick={()=>{if(confirm("Xóa toàn bộ tiến độ trên thiết bị này?"))setDone([])}}>Đặt lại tiến độ trên thiết bị này</button></section>}
+  <footer>ARIN330585 Study Planner <span>Học tập có hệ thống · 2026</span></footer>
+ </main>
+}
+function Task({text,checked,onClick}:{text:string;checked:boolean;onClick:()=>void}){return <button className={"task "+(checked?"checked":"")} onClick={onClick}><i>{checked?"✓":""}</i><span>{text}</span></button>}
